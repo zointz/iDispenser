@@ -323,17 +323,19 @@ public class MainActivity extends Activity {
     View.OnClickListener listener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
+        String departamento;
 
             switch (v.getId()) {
 
                 case R.id.button1:
+                    // Identificar o texto do botão
+                    departamento = ticketButton[0].getText().toString();
                     //  Começa a preencher o textBitmap com o conteudo do botão
-                    textBitmap = addLineTextImage(null, ticketButton[0].getText().toString(), 52, Align.ALIGN_CENTER);
+                    textBitmap = addLineTextImage(null, departamento , 52, Align.ALIGN_CENTER);
                     //  Inicia o envio do request
                     try {
-                        if (new Protocol(socket, MainActivity.this).sendMessage("Request:" + ticketButton[0].getText().toString())) {
-                            Log.w("#inClickListener#", " - Btn1 - Send msg - " + ticketButton[0].getText().toString());
+                        if (new Protocol(socket, MainActivity.this).sendMessage("Request:" + departamento)) {
+                            Log.w("#inClickListener#", " - Btn1 - Send msg - " + departamento);
                         } else {
                             Log.e("#inClickListener#", " - Btn1 - Error Sending Message");
                             new Thread(new ClientThread("10.10.10.10", 5006)).start();
@@ -346,12 +348,14 @@ public class MainActivity extends Activity {
                     break;
 
                 case R.id.button2:
+                    // Identificar o texto do botão
+                    departamento = ticketButton[1].getText().toString();
                     //  Começa a preencher o textBitmap com o conteudo do botão
-                    textBitmap = addLineTextImage(null, ticketButton[1].getText().toString(), 52, Align.ALIGN_CENTER);
+                    textBitmap = addLineTextImage(null, departamento , 52, Align.ALIGN_CENTER);
                     //  Inicia o envio do request
                     try {
-                        if (new Protocol(socket, MainActivity.this).sendMessage("Request:" + ticketButton[0].getText().toString())) {
-                            Log.w("#inClickListener#", " - Btn1 - Send msg - " + ticketButton[1].getText().toString());
+                        if (new Protocol(socket, MainActivity.this).sendMessage("Request:" + departamento)) {
+                            Log.w("#inClickListener#", " - Btn1 - Send msg - " + departamento);
                         } else {
                             Log.e("#inClickListener#", " - Btn1 - Error Sending Message");
                             new Thread(new ClientThread("10.10.10.10", 5006)).start();
@@ -364,12 +368,14 @@ public class MainActivity extends Activity {
                     break;
 
                 case R.id.button3:
+                    // Identificar o texto do botão
+                    departamento = ticketButton[2].getText().toString();
                     //  Começa a preencher o textBitmap com o conteudo do botão
-                    textBitmap = addLineTextImage(null, ticketButton[0].getText().toString(), 52, Align.ALIGN_CENTER);
+                    textBitmap = addLineTextImage(null, departamento , 52, Align.ALIGN_CENTER);
                     //  Inicia o envio do request
                     try {
-                        if (new Protocol(socket, MainActivity.this).sendMessage("Request:" + ticketButton[0].getText().toString())) {
-                            Log.w("#inClickListener#", " - Btn1 - Send msg - " + ticketButton[0].getText().toString());
+                        if (new Protocol(socket, MainActivity.this).sendMessage("Request:" + departamento)) {
+                            Log.w("#inClickListener#", " - Btn1 - Send msg - " + departamento);
                         } else {
                             Log.e("#inClickListener#", " - Btn1 - Error Sending Message");
                             new Thread(new ClientThread("10.10.10.10", 5006)).start();
@@ -382,12 +388,14 @@ public class MainActivity extends Activity {
                     break;
 
                 case R.id.button4:
+                    // Identificar o texto do botão
+                    departamento = ticketButton[3].getText().toString();
                     //  Começa a preencher o textBitmap com o conteudo do botão
-                    textBitmap = addLineTextImage(null, ticketButton[0].getText().toString(), 52, Align.ALIGN_CENTER);
+                    textBitmap = addLineTextImage(null, departamento , 52, Align.ALIGN_CENTER);
                     //  Inicia o envio do request
                     try {
-                        if (new Protocol(socket, MainActivity.this).sendMessage("Request:" + ticketButton[0].getText().toString())) {
-                            Log.w("#inClickListener#", " - Btn1 - Send msg - " + ticketButton[0].getText().toString());
+                        if (new Protocol(socket, MainActivity.this).sendMessage("Request:" + departamento)) {
+                            Log.w("#inClickListener#", " - Btn1 - Send msg - " + departamento);
                         } else {
                             Log.e("#inClickListener#", " - Btn1 - Error Sending Message");
                             new Thread(new ClientThread("10.10.10.10", 5006)).start();
@@ -400,12 +408,14 @@ public class MainActivity extends Activity {
                     break;
 
                 case R.id.button5:
+                    // Identificar o texto do botão
+                    departamento = ticketButton[4].getText().toString();
                     //  Começa a preencher o textBitmap com o conteudo do botão
-                    textBitmap = addLineTextImage(null, ticketButton[0].getText().toString(), 52, Align.ALIGN_CENTER);
+                    textBitmap = addLineTextImage(null, departamento , 52, Align.ALIGN_CENTER);
                     //  Inicia o envio do request
                     try {
-                        if (new Protocol(socket, MainActivity.this).sendMessage("Request:" + ticketButton[0].getText().toString())) {
-                            Log.w("#inClickListener#", " - Btn1 - Send msg - " + ticketButton[0].getText().toString());
+                        if (new Protocol(socket, MainActivity.this).sendMessage("Request:" + departamento)) {
+                            Log.w("#inClickListener#", " - Btn1 - Send msg - " + departamento);
                         } else {
                             Log.e("#inClickListener#", " - Btn1 - Error Sending Message");
                             new Thread(new ClientThread("10.10.10.10", 5006)).start();
@@ -527,6 +537,7 @@ public class MainActivity extends Activity {
             e.printStackTrace();
         }
         // Construction text of the ticket
+
         textBitmap = addLineTextImage(textBitmap, " ", 20, Align.ALIGN_CENTER);
         textBitmap = addLineTextImage(textBitmap, "Senha Nº" + ticket, 60, Align.ALIGN_CENTER);
         textBitmap = addLineTextImage(textBitmap, " ", 20, Align.ALIGN_CENTER);
@@ -792,7 +803,7 @@ public class MainActivity extends Activity {
                 }
 
                 while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    Log.i("#ClientThread#", " inputstream" + inputStream.available());
+                    Log.e("#ClientThread#", " inputstream - " + inputStream.available());
                     byteArrayOutputStream.write(buffer, 0, bytesRead);
                     response = byteArrayOutputStream.toString("UTF-8");
                     updateConversationHandler.post(new updateUIThread(response));
