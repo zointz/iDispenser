@@ -1,0 +1,171 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+
+    tools:context=".MainActivity">
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:baselineAligned="false">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            >
+
+
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:id="@+id/button1"
+                android:textStyle="bold"
+                android:textSize="30sp"
+                android:layout_margin="10dp"
+
+                android:visibility="gone"
+                android:clickable="false" />
+
+
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:id="@+id/button2"
+                android:textStyle="bold"
+                android:textSize="30sp"
+                android:layout_margin="10dp"
+
+                android:visibility="gone"
+                />
+
+
+            <!--
+               android:enabled="false"
+               android:visibility="invisible"
+               android:visibility="gone"
+               android:layout_gravity="center"
+             -->
+
+
+
+
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:id="@+id/button3"
+                android:singleLine="false"
+                android:textStyle="bold"
+                android:textSize="30sp"
+                android:textAlignment="center"
+                android:layout_margin="10dp"
+
+                android:visibility="gone"
+                />
+
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:id="@+id/button4"
+                android:text="4"
+                android:textStyle="bold"
+                android:textSize="30sp"
+                android:layout_margin="10dp"
+
+                android:visibility="gone"
+                />
+
+            <Button
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:id="@+id/button5"
+                android:text="5"
+                android:textStyle="bold"
+                android:textSize="30sp"
+                android:layout_margin="10dp"
+
+                android:visibility="gone"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="@string/establishing_connection"
+                android:id="@+id/connection"
+                android:background="#ff0076a3"
+
+                android:textColor="#ffffffff"
+                android:textSize="40dp"
+                android:padding="30dp"
+                android:gravity="center"
+                android:textStyle="bold|italic"
+
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:focusable="false">
+
+            <AnalogClock
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/analogClock"
+                android:layout_gravity="center_horizontal"
+                android:clickable="true" />
+
+            <DigitalClock
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/digitalClock"
+                android:clickable="true"
+
+                android:layout_gravity="center_horizontal" />
+
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="20dp"
+                android:id="@+id/txtDateButton"
+                android:textSize="11sp"
+                android:background="@android:color/transparent"
+                android:soundEffectsEnabled="false"
+                android:layout_gravity="center_horizontal" />
+
+            <ImageButton
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitCenter"
+                android:id="@+id/logo"
+                android:src="@drawable/ual_horizontal"
+                android:padding="10dp"
+                android:background="@android:color/transparent"
+                android:soundEffectsEnabled="false"
+                android:contentDescription="Logo of the company" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>
+
+
+

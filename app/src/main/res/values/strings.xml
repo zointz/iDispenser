@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Dispenser</string>
+
+
+    <string name="action_settings">Settings</string>
+    <string name= "establishing_connection">A estabelecer ligacao ao servidor...\n\n Por favor Aguarde !</string>
+
+
+</resources>
