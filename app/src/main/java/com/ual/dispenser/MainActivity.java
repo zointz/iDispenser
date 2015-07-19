@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.concurrent.Executors;
@@ -79,7 +80,7 @@ public class MainActivity extends Activity {
     private SeekBar seekBarDensity;
     */
     private ScheduledExecutorService servicePollStatus;
-    private JAPrinter printer;
+    protected JAPrinter printer;
     private JAPrinterStatus status;
     private JABarcodeGenerator barcodeGenerator;
     private Bitmap logoBitmap, qrBitmap, textBitmap, bottomTextBitmap;
@@ -532,22 +533,28 @@ public class MainActivity extends Activity {
         try {
             printer.ledSet((byte) 0, (byte) 100, (byte) 0);
 
-
         } catch (JAException e) {
             e.printStackTrace();
         }
         // Construction text of the ticket
-
+/*
         textBitmap = addLineTextImage(textBitmap, " ", 20, Align.ALIGN_CENTER);
         textBitmap = addLineTextImage(textBitmap, "Senha Nº" + ticket, 60, Align.ALIGN_CENTER);
         textBitmap = addLineTextImage(textBitmap, " ", 20, Align.ALIGN_CENTER);
         textBitmap = addLineTextImage(textBitmap, java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()), 24, Align.ALIGN_CENTER);
-        bottomTextBitmap = addLineTextImage(null, urlString, 30, Align.ALIGN_CENTER);
+        bottomTextBitmap = addLineTextImage(null, urlString, 30, Align.ALIGN_CENTER);*/
         try {
             //Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ual_horizontal);
             //imageBitmap = Bitmap.createScaledBitmap(imageBitmap, 279, 110, true);
 
             synchronized (printerLock) {
+                // Construction text of the ticket
+
+                textBitmap = addLineTextImage(textBitmap, " ", 20, Align.ALIGN_CENTER);
+                textBitmap = addLineTextImage(textBitmap, "Senha Nº" + ticket, 60, Align.ALIGN_CENTER);
+                textBitmap = addLineTextImage(textBitmap, " ", 20, Align.ALIGN_CENTER);
+                textBitmap = addLineTextImage(textBitmap, java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()), 24, Align.ALIGN_CENTER);
+                bottomTextBitmap = addLineTextImage(null, urlString, 30, Align.ALIGN_CENTER);
                             /*
                              * Set grey level, print speed, dithering and density settings
                              */
@@ -652,6 +659,7 @@ public class MainActivity extends Activity {
         } catch (JAException e) {
             Toast.makeText(MainActivity.this, "Failed to print sample", Toast.LENGTH_LONG).show();
         }
+
     }
 
     private Bitmap addLineTextImage(Bitmap dstBitmap, String lineText, int fontSize, Align align) {
@@ -762,13 +770,9 @@ public class MainActivity extends Activity {
 
                 do {
                     socket = null;
+                    Log.i("#Socket#","A estabelecer uma ligação ao servidor...");
                     socket = new Socket(serverAddr, this.port);
-
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        Log.e("Criação de socket - ", e.toString());
-                    }
+                    Log.i("#Socket#","Ligação estabelecida :)");
                 } while ((socket == null) || socket.isClosed());
 
 
@@ -802,12 +806,26 @@ public class MainActivity extends Activity {
                     Toast.makeText(MainActivity.this, "Falha ao iniciar o protocolo", Toast.LENGTH_LONG).show();
                 }
 
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    Log.e("#ClientThread#", " inputstream - " + inputStream.available());
-                    byteArrayOutputStream.write(buffer, 0, bytesRead);
-                    response = byteArrayOutputStream.toString("UTF-8");
-                    updateConversationHandler.post(new updateUIThread(response));
-                    byteArrayOutputStream.reset();
+                try {
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        Log.e("#ClientThread#", " inputstream - " + inputStream.available());
+                        byteArrayOutputStream.write(buffer, 0, bytesRead);
+                        response = byteArrayOutputStream.toString("UTF-8");
+                        updateConversationHandler.post(new updateUIThread(response));
+                        byteArrayOutputStream.reset();
+                    }
+                } catch (SocketException e) {
+                    e.printStackTrace();
+                    Log.e("#ClientThread#", e.getMessage());
+                    try {
+                        new buttonsControl(MainActivity.this).showConnection(MAXBUTTONS);
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                    new Thread(new ClientThread("10.10.10.10", 5006)).start();
+
+
+
                 }
 
 

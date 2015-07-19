@@ -93,6 +93,7 @@ public class Protocol {
             throw new IOException("Error transmitting data.");
         }
 
+
         return true;
 
 
@@ -130,31 +131,22 @@ public class Protocol {
                     Log.v("#Protocol#", " - Message -"+ s);
                 }
                 Log.v("#Protocol#", "- Nº de elementos - " + Integer.toString(splitedMessage.length));
-
-                MainActivity.connection.setVisibility(View.GONE);
-                for (int i = 0; i < splitedMessage.length; i++) {
-                    if (splitedMessage[i] != null) {
-                        MainActivity.ticketButton[i].setText(splitedMessage[i]);
-                        MainActivity.ticketButton[i].setVisibility(View.VISIBLE);
-                    }
-                }
+                //Chama o controle dos botões, para mostrar os departamentos.
+                new buttonsControl(context).showButtons(splitedMessage.length,splitedMessage);
 
 
                 break;
             case "TICKET":
                 splitedMessage = splitedProtocol[1].split(",");
+
                 Log.v("#Protocol# - ", "Message - "+splitedProtocol[1]);
+
                 ((MainActivity) context).createQRcode(splitedMessage[1]);
-
-             //   MainActivity.ticket = splitedMessage[0] + "\n" + splitedMessage[1];
-
                 ((MainActivity) context).printTicket(splitedMessage[0], splitedMessage[1]);
-
-
                 break;
 
             case "INACTIVE":
-                MainActivity.inactive=true;
+                    MainActivity.inactive=true;
                 Log.v("#Protocol#", " - Recebido INACTIVE");
                 Toast.makeText(context, R.string.inactive, Toast.LENGTH_LONG).show();
                 break;
