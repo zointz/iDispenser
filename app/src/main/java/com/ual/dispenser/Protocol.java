@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -55,7 +56,7 @@ public class Protocol {
             out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
         } catch (Exception e) {
             e.printStackTrace();
-            Log.i("Protocol - Exception", e.toString());
+            Log.e("#Protocol#", " - Exception - " + e.toString());
         }
 
     }
@@ -84,21 +85,15 @@ public class Protocol {
             out.println(messageOut);
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
 
         if (out.checkError()){
-            Log.e("outError"," "+ out.checkError())  ;
+            Log.e("#Protocol#", " - outError - " + out.checkError())  ;
             throw new IOException("Error transmitting data.");
         }
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        Log.i("Keep Alive)","-"+MainActivity.keepAlive);
-        return true;
-   //teste commit
 
+        return true;
 
 
     }
@@ -119,7 +114,7 @@ public class Protocol {
         String[] splitedProtocol;
         splitedProtocol = message.split(";");
 
-        Log.v("Pedro - Protocol - ", splitedProtocol[0]);
+        Log.v("#Protocol#" , " - Protocol - "+ splitedProtocol[0]);
 
 
         //Testa o protocolo
@@ -132,9 +127,9 @@ public class Protocol {
                 splitedMessage = splitedProtocol[1].split(",");
 
                 for (String s : splitedMessage) {
-                    Log.v("Pedro - Message ", s);
+                    Log.v("#Protocol#", " - Message -"+ s);
                 }
-                Log.v("Pedro - Nº de elementos", Integer.toString(splitedMessage.length));
+                Log.v("#Protocol#", "- Nº de elementos - " + Integer.toString(splitedMessage.length));
 
                 MainActivity.connection.setVisibility(View.GONE);
                 for (int i = 0; i < splitedMessage.length; i++) {
@@ -148,7 +143,7 @@ public class Protocol {
                 break;
             case "TICKET":
                 splitedMessage = splitedProtocol[1].split(",");
-                Log.v("Pedro - Message ", splitedProtocol[1]);
+                Log.v("#Protocol# - ", "Message - "+splitedProtocol[1]);
                 ((MainActivity) context).createQRcode(splitedMessage[1]);
 
              //   MainActivity.ticket = splitedMessage[0] + "\n" + splitedMessage[1];
@@ -157,8 +152,21 @@ public class Protocol {
 
 
                 break;
+
+            case "INACTIVE":
+                MainActivity.inactive=true;
+                Log.v("#Protocol#", " - Recebido INACTIVE");
+                Toast.makeText(context, R.string.inactive, Toast.LENGTH_LONG).show();
+                break;
+
+
+            case "KEEPALIVE":
+                MainActivity.keepAlive=true;
+                Log.v("#Protocol#", " - Recebido KEEPALIVE");
+                break;
+
             default:
-                MainActivity.ticket = " Erro na recepcao de dados !";
+                Log.v("#Protocol#", " - Não consta do protocolo (comando desconhecido)");
                 break;
         }
     }

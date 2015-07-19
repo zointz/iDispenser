@@ -52,10 +52,9 @@ public class MainActivity extends Activity {
     public static TextView connection;
     public static String ticket = null;
 
-    public static Boolean keepAlive;
+    public static Boolean keepAlive, inactive = false;
     private final int paperWidth = 576;
     private final int[] exitSequence = {0, 2, 2, 6, 8, 5, 12, 14, 8, 18};  //Sequência de saida
-
 
 
     //  Private
@@ -123,8 +122,6 @@ public class MainActivity extends Activity {
 
 */
 //        setSystemUIEnabled(true);
-
-
 
 
         try {
@@ -208,9 +205,6 @@ public class MainActivity extends Activity {
          *  Initialize JABarcodeGenerator instance and generate barcode Bitmap for sample receipt
          */
             barcodeGenerator = new JABarcodeGenerator();
-
-
-
 
 
             /*******************************************************************************************
@@ -336,22 +330,17 @@ public class MainActivity extends Activity {
                 case R.id.button1:
                     //  Começa a preencher o textBitmap com o conteudo do botão
                     textBitmap = addLineTextImage(null, ticketButton[0].getText().toString(), 52, Align.ALIGN_CENTER);
-
                     //  Inicia o envio do request
-                    keepAlive = true;
                     try {
-                        if(new Protocol(socket, MainActivity.this).sendMessage("Request:" + ticketButton[0].getText().toString())){
-                            Log.w("Btn1-"," Send msg");
-                        }
-                        else {
-                            Log.e("Btn1-"," Error Send msg");
+                        if (new Protocol(socket, MainActivity.this).sendMessage("Request:" + ticketButton[0].getText().toString())) {
+                            Log.w("#inClickListener#", " - Btn1 - Send msg - " + ticketButton[0].getText().toString());
+                        } else {
+                            Log.e("#inClickListener#", " - Btn1 - Error Sending Message");
                             new Thread(new ClientThread("10.10.10.10", 5006)).start();
                         }
-
-
                     } catch (Exception e) {
                         e.printStackTrace();
-                        Log.w("Btn1-", " Apanhou o erro!");
+                        Log.w("#inClickListener#", " - Btn1 - Apanhou o erro!");
                         new Thread(new ClientThread("10.10.10.10", 5006)).start();
                     }
                     break;
@@ -361,64 +350,82 @@ public class MainActivity extends Activity {
                     textBitmap = addLineTextImage(null, ticketButton[1].getText().toString(), 52, Align.ALIGN_CENTER);
                     //  Inicia o envio do request
                     try {
-                        new Protocol(socket, MainActivity.this).sendMessage("Request:" + ticketButton[1].getText().toString());
+                        if (new Protocol(socket, MainActivity.this).sendMessage("Request:" + ticketButton[0].getText().toString())) {
+                            Log.w("#inClickListener#", " - Btn1 - Send msg - " + ticketButton[1].getText().toString());
+                        } else {
+                            Log.e("#inClickListener#", " - Btn1 - Error Sending Message");
+                            new Thread(new ClientThread("10.10.10.10", 5006)).start();
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
-                        Log.i("Erro na transmissão" , " restart");
+                        Log.w("#inClickListener#", " - Btn1 - Apanhou o erro!");
                         new Thread(new ClientThread("10.10.10.10", 5006)).start();
                     }
-
-
                     break;
 
                 case R.id.button3:
                     //  Começa a preencher o textBitmap com o conteudo do botão
-                    textBitmap = addLineTextImage(null, ticketButton[2].getText().toString(), 52, Align.ALIGN_CENTER);
+                    textBitmap = addLineTextImage(null, ticketButton[0].getText().toString(), 52, Align.ALIGN_CENTER);
                     //  Inicia o envio do request
                     try {
-                        new Protocol(socket, MainActivity.this).sendMessage("Request:" + ticketButton[2].getText().toString());
+                        if (new Protocol(socket, MainActivity.this).sendMessage("Request:" + ticketButton[0].getText().toString())) {
+                            Log.w("#inClickListener#", " - Btn1 - Send msg - " + ticketButton[0].getText().toString());
+                        } else {
+                            Log.e("#inClickListener#", " - Btn1 - Error Sending Message");
+                            new Thread(new ClientThread("10.10.10.10", 5006)).start();
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
+                        Log.w("#inClickListener#", " - Btn1 - Apanhou o erro!");
                         new Thread(new ClientThread("10.10.10.10", 5006)).start();
                     }
-
                     break;
+
                 case R.id.button4:
                     //  Começa a preencher o textBitmap com o conteudo do botão
-                    textBitmap = addLineTextImage(null, ticketButton[3].getText().toString(), 52, Align.ALIGN_CENTER);
+                    textBitmap = addLineTextImage(null, ticketButton[0].getText().toString(), 52, Align.ALIGN_CENTER);
                     //  Inicia o envio do request
                     try {
-                        new Protocol(socket, MainActivity.this).sendMessage("Request:" + ticketButton[3].getText().toString());
+                        if (new Protocol(socket, MainActivity.this).sendMessage("Request:" + ticketButton[0].getText().toString())) {
+                            Log.w("#inClickListener#", " - Btn1 - Send msg - " + ticketButton[0].getText().toString());
+                        } else {
+                            Log.e("#inClickListener#", " - Btn1 - Error Sending Message");
+                            new Thread(new ClientThread("10.10.10.10", 5006)).start();
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
+                        Log.w("#inClickListener#", " - Btn1 - Apanhou o erro!");
                         new Thread(new ClientThread("10.10.10.10", 5006)).start();
                     }
                     break;
+
                 case R.id.button5:
                     //  Começa a preencher o textBitmap com o conteudo do botão
-                    textBitmap = addLineTextImage(null, ticketButton[4].getText().toString(), 52, Align.ALIGN_CENTER);
+                    textBitmap = addLineTextImage(null, ticketButton[0].getText().toString(), 52, Align.ALIGN_CENTER);
                     //  Inicia o envio do request
                     try {
-                        new Protocol(socket, MainActivity.this).sendMessage("Request:" + ticketButton[4].getText().toString());
+                        if (new Protocol(socket, MainActivity.this).sendMessage("Request:" + ticketButton[0].getText().toString())) {
+                            Log.w("#inClickListener#", " - Btn1 - Send msg - " + ticketButton[0].getText().toString());
+                        } else {
+                            Log.e("#inClickListener#", " - Btn1 - Error Sending Message");
+                            new Thread(new ClientThread("10.10.10.10", 5006)).start();
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
+                        Log.w("#inClickListener#", " - Btn1 - Apanhou o erro!");
                         new Thread(new ClientThread("10.10.10.10", 5006)).start();
                     }
                     break;
 
                 case R.id.txtDateButton:
                     exitSequenceTest(1 * exitCounter);
-
                     break;
 
 
                 case (R.id.logo):
                     exitSequenceTest(2 * exitCounter);
-
                     break;
-
             }
-
         }
     };
 
@@ -458,7 +465,7 @@ public class MainActivity extends Activity {
                 Log.w("Main","Failed to kill task bar (2).");
                 e.printStackTrace();
             }*/
-                finish();
+            finish();
         } else {
             exitCounter++;
             Log.d("Counter-", " " + exitCounter);
@@ -511,7 +518,6 @@ public class MainActivity extends Activity {
     public void printTicket(String ticket, String urlString) {
 
 
-
         //Alguma côr
         try {
             printer.ledSet((byte) 0, (byte) 100, (byte) 0);
@@ -525,7 +531,7 @@ public class MainActivity extends Activity {
         textBitmap = addLineTextImage(textBitmap, "Senha Nº" + ticket, 60, Align.ALIGN_CENTER);
         textBitmap = addLineTextImage(textBitmap, " ", 20, Align.ALIGN_CENTER);
         textBitmap = addLineTextImage(textBitmap, java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()), 24, Align.ALIGN_CENTER);
-        bottomTextBitmap = addLineTextImage(null, urlString, 20, Align.ALIGN_CENTER);
+        bottomTextBitmap = addLineTextImage(null, urlString, 30, Align.ALIGN_CENTER);
         try {
             //Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ual_horizontal);
             //imageBitmap = Bitmap.createScaledBitmap(imageBitmap, 279, 110, true);
@@ -786,7 +792,7 @@ public class MainActivity extends Activity {
                 }
 
                 while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    Log.i("inputstream", " "+inputStream.available());
+                    Log.i("#ClientThread#", " inputstream" + inputStream.available());
                     byteArrayOutputStream.write(buffer, 0, bytesRead);
                     response = byteArrayOutputStream.toString("UTF-8");
                     updateConversationHandler.post(new updateUIThread(response));
@@ -814,12 +820,14 @@ public class MainActivity extends Activity {
 
         @Override
         public void run() {
-            try {
-              new zzzTransportMessage(getBaseContext()).receive("Chegou:" + msg);                               //IMPORTANTE
+            /*try {
+                new zzzTransportMessage(getBaseContext()).receive("Chegou:" + msg);                               //IMPORTANTE
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            keepAlive=true;
+*/
+
+            Log.v("#updateUIThread#", " - Recebe - " + msg);
             new Protocol(MainActivity.this).receiveMessage(msg);
 
             //new Protocol(getBaseContext()).receiveMessage(msg);
@@ -841,7 +849,7 @@ public class MainActivity extends Activity {
 */
 
 
-    public void setSystemUIEnabled(boolean enabled){
+    public void setSystemUIEnabled(boolean enabled) {
         try {
             Process p = Runtime.getRuntime().exec("su");
             DataOutputStream os = new DataOutputStream(p.getOutputStream());
@@ -855,9 +863,7 @@ public class MainActivity extends Activity {
     }
 
 
-
-
-    public void createQRcode(String urlString){
+    public void createQRcode(String urlString) {
         try {
             barcodeBitmap_QR = barcodeGenerator.generateQrcode(urlString, QR_MODEL.QR_MODEL_2, QR_CELL_SIZE.QR_CELL_SIZE_6, QR_CORRECTION_LEVEL.QR_CORRECTION_LEVEL_1); // generate QRCode
             int alignQRCenter = (paperWidth - barcodeBitmap_QR.getWidth()) / 2;
@@ -873,5 +879,36 @@ public class MainActivity extends Activity {
             Toast.makeText(MainActivity.this, "Failed to generate barcode: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
+
+
+    /**
+     * Testa a connecção ao servidor
+     *
+     * @return Se a ligação ainda está viva
+     */
+
+    public boolean keepAlive() {
+
+        keepAlive = false;
+
+
+        try {
+            new Protocol(socket, MainActivity.this).sendMessage("KEEPALIVE");
+            Log.v("#keepalive#", "Sent");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        Log.v("#keepalive# - Estado", keepAlive + "");
+        if (keepAlive)
+            return true;
+        else {
+            new Thread(new ClientThread("10.10.10.10", 5006)).start();
+            return false;
+        }
+
+    }
+
 }
 
