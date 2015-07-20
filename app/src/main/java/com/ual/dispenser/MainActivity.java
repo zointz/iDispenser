@@ -244,7 +244,8 @@ public class MainActivity extends Activity {
          *********************************************************************************************/
 
         try {
-            printer.ledGradualShift(2000, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 73, (byte) 100);
+            printer.ledGradualShift(1000, (byte) 0, (byte) 0, (byte) 0, (byte) 100, (byte) 30, (byte) 0);
+            //printer.ledGradualShift(2000, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 73, (byte) 100);
             // printer.ledGradualShift (2000,(byte)100, (byte)100, (byte)0, (byte)0,(byte)0, (byte) 0);
         } catch (JAException e) {
             e.printStackTrace();
@@ -771,10 +772,21 @@ public class MainActivity extends Activity {
                 do {
                     socket = null;
                     Log.i("#Socket#","A estabelecer uma ligação ao servidor...");
-                    socket = new Socket(serverAddr, this.port);
-                    Log.i("#Socket#","Ligação estabelecida :)");
-                } while ((socket == null) || socket.isClosed());
 
+                    try {
+                        socket = new Socket(serverAddr, this.port);
+                    } catch (IOException e) {
+                        Log.e("#ClientThread#","Ligação socket falhou - " + e.getMessage() );
+                        socket=null;
+                        try {
+                            Thread.sleep(5000);
+                        } catch (InterruptedException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+
+                } while ((socket == null) || socket.isClosed());
+                Log.i("#Socket#","Ligação estabelecida :)");
 
               /*  socket = null;
                 while (true) {
