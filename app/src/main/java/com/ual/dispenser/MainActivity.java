@@ -99,6 +99,10 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
 
 
+
+
+
+
 /*
         Process proc = null;
 
@@ -216,6 +220,7 @@ public class MainActivity extends Activity {
             synchronized (printerLock) {
                 printer.claim();
                 printerLock.notifyAll();
+                printer.resetToDefault();
 
             }
         } catch (JAException e) {
@@ -244,6 +249,7 @@ public class MainActivity extends Activity {
          *********************************************************************************************/
 
         try {
+            printer.ledReset();
             printer.ledGradualShift(1000, (byte) 0, (byte) 0, (byte) 0, (byte) 100, (byte) 30, (byte) 0);
             //printer.ledGradualShift(2000, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 73, (byte) 100);
             // printer.ledGradualShift (2000,(byte)100, (byte)100, (byte)0, (byte)0,(byte)0, (byte) 0);
@@ -296,21 +302,7 @@ public class MainActivity extends Activity {
         /*
          *  Start socket
          */
-
-        //      UAL
-        // new Thread(new ClientThread("10.0.65.19", 5006)).start();
-        // new Thread(new ClientThread("10.0.65.17", 5006)).start();
-
-        //      Loja
-        // new Thread(new ClientThread("192.168.16.31", 5006)).start();
-        //      new Thread(new _SocketManager("192.168.16.31", 5006)).start();
-        //      new Thread(new ClientThread("10.0.68.5", 5006)).start();
-
-        //      casa
-        new Thread(new ClientThread("10.10.10.10", 5006)).start();
-        //      _SocketManager communications = new _SocketManager("192.168.1.5", 5006);
-        //      new Thread(communications).start();
-
+        new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();
 
         //        try {
         //            new zzzTransportMessage(socket).send("222Hello from Asura CPRN!");
@@ -337,16 +329,15 @@ public class MainActivity extends Activity {
                     //  Inicia o envio do request
                     try {
                         if (new Protocol(socket, MainActivity.this).sendMessage("Request:" + departamento)) {
-                            Log.w("#inClickListener#", " - Btn1 - Send msg - " + departamento);
+                            Log.w("#inClickListener#", "Btn1 sends - " + departamento);
                         } else {
-                            Log.e("#inClickListener#", " - Btn1 - Error Sending Message");
-                            new Thread(new ClientThread("10.10.10.10", 5006)).start();
+                            Toast.makeText(MainActivity.this, R.string.server_Connection_Error, Toast.LENGTH_LONG).show();
+                            Log.e("#inClickListener#"," - Btn1 - Error sending message");
+                            new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
-                        Log.w("#inClickListener#", " - Btn1 - Apanhou o erro!");
-                        new Thread(new ClientThread("10.10.10.10", 5006)).start();
-                    }
+                        Log.e("#inClickListener#", "- Btn1 - Catch you, trying to reconnect ! ", e);
+                        new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();                    }
                     break;
 
                 case R.id.button2:
@@ -357,17 +348,17 @@ public class MainActivity extends Activity {
                     //  Inicia o envio do request
                     try {
                         if (new Protocol(socket, MainActivity.this).sendMessage("Request:" + departamento)) {
-                            Log.w("#inClickListener#", " - Btn1 - Send msg - " + departamento);
+                            Log.w("#inClickListener#", "Btn2 sends - " + departamento);
                         } else {
-                            Log.e("#inClickListener#", " - Btn1 - Error Sending Message");
-                            new Thread(new ClientThread("10.10.10.10", 5006)).start();
+                            Toast.makeText(MainActivity.this, R.string.server_Connection_Error, Toast.LENGTH_LONG).show();
+                            Log.e("#inClickListener#"," - Btn2 - Error sending message");
+                            new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
-                        Log.w("#inClickListener#", " - Btn1 - Apanhou o erro!");
-                        new Thread(new ClientThread("10.10.10.10", 5006)).start();
-                    }
+                        Log.e("#inClickListener#", "- Btn2 - Catch you, trying to reconnect ! ", e);
+                        new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();                    }
                     break;
+
 
                 case R.id.button3:
                     // Identificar o texto do botão
@@ -377,15 +368,14 @@ public class MainActivity extends Activity {
                     //  Inicia o envio do request
                     try {
                         if (new Protocol(socket, MainActivity.this).sendMessage("Request:" + departamento)) {
-                            Log.w("#inClickListener#", " - Btn1 - Send msg - " + departamento);
+                            Log.w("#inClickListener#", "Btn3 sends - " + departamento);
                         } else {
-                            Log.e("#inClickListener#", " - Btn1 - Error Sending Message");
-                            new Thread(new ClientThread("10.10.10.10", 5006)).start();
-                        }
+                            Toast.makeText(MainActivity.this, R.string.server_Connection_Error, Toast.LENGTH_LONG).show();
+                            Log.e("#inClickListener#"," - Btn3 - Error sending message");
+                            new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();                        }
                     } catch (Exception e) {
-                        e.printStackTrace();
-                        Log.w("#inClickListener#", " - Btn1 - Apanhou o erro!");
-                        new Thread(new ClientThread("10.10.10.10", 5006)).start();
+                        Log.e("#inClickListener#", "- Btn3 - Catch you, trying to reconnect ! ", e);
+                        new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();
                     }
                     break;
 
@@ -397,15 +387,15 @@ public class MainActivity extends Activity {
                     //  Inicia o envio do request
                     try {
                         if (new Protocol(socket, MainActivity.this).sendMessage("Request:" + departamento)) {
-                            Log.w("#inClickListener#", " - Btn1 - Send msg - " + departamento);
+                            Log.w("#inClickListener#", "Btn4 sends - " + departamento);
                         } else {
-                            Log.e("#inClickListener#", " - Btn1 - Error Sending Message");
-                            new Thread(new ClientThread("10.10.10.10", 5006)).start();
+                            Toast.makeText(MainActivity.this, R.string.server_Connection_Error, Toast.LENGTH_LONG).show();
+                            Log.e("#inClickListener#"," - Btn4 - Error sending message");
+                            new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
-                        Log.w("#inClickListener#", " - Btn1 - Apanhou o erro!");
-                        new Thread(new ClientThread("10.10.10.10", 5006)).start();
+                        Log.e("#inClickListener#", "- Btn4 - Catch you, trying to reconnect ! ", e);
+                        new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();
                     }
                     break;
 
@@ -417,22 +407,21 @@ public class MainActivity extends Activity {
                     //  Inicia o envio do request
                     try {
                         if (new Protocol(socket, MainActivity.this).sendMessage("Request:" + departamento)) {
-                            Log.w("#inClickListener#", " - Btn1 - Send msg - " + departamento);
+                            Log.w("#inClickListener#", "Btn5 sends - " + departamento);
                         } else {
-                            Log.e("#inClickListener#", " - Btn1 - Error Sending Message");
-                            new Thread(new ClientThread("10.10.10.10", 5006)).start();
+                            Toast.makeText(MainActivity.this, R.string.server_Connection_Error, Toast.LENGTH_LONG).show();
+                            Log.e("#inClickListener#"," - Btn5 - Error sending message");
+                            new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
-                        Log.w("#inClickListener#", " - Btn1 - Apanhou o erro!");
-                        new Thread(new ClientThread("10.10.10.10", 5006)).start();
+                        Log.e("#inClickListener#", "- Btn5 - Catch you, trying to reconnect ! ", e);
+                        new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();
                     }
                     break;
 
                 case R.id.txtDateButton:
                     exitSequenceTest(1 * exitCounter);
                     break;
-
 
                 case (R.id.logo):
                     exitSequenceTest(2 * exitCounter);
@@ -545,8 +534,8 @@ public class MainActivity extends Activity {
         textBitmap = addLineTextImage(textBitmap, java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()), 24, Align.ALIGN_CENTER);
         bottomTextBitmap = addLineTextImage(null, urlString, 30, Align.ALIGN_CENTER);*/
         try {
-            //Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ual_horizontal);
-            //imageBitmap = Bitmap.createScaledBitmap(imageBitmap, 279, 110, true);
+//Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ual_horizontal);
+//imageBitmap = Bitmap.createScaledBitmap(imageBitmap, 279, 110, true);
 
             synchronized (printerLock) {
                 // Construction text of the ticket
@@ -555,7 +544,15 @@ public class MainActivity extends Activity {
                 textBitmap = addLineTextImage(textBitmap, "Senha Nº" + ticket, 60, Align.ALIGN_CENTER);
                 textBitmap = addLineTextImage(textBitmap, " ", 20, Align.ALIGN_CENTER);
                 textBitmap = addLineTextImage(textBitmap, java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()), 24, Align.ALIGN_CENTER);
-                bottomTextBitmap = addLineTextImage(null, urlString, 30, Align.ALIGN_CENTER);
+                //url deverá ser sempre inferior a 40
+                if (urlString.length()>41){
+                    bottomTextBitmap = addLineTextImage(null, urlString.substring(0, 41), 25, Align.ALIGN_CENTER);
+               //     bottomTextBitmap = addLineTextImage(bottomTextBitmap,urlString.substring(41,urlString.length()), 25, Align.ALIGN_CENTER);
+                    bottomTextBitmap = addLineTextImage(bottomTextBitmap,"sdkjhsdjkfhsdfss sjdhfsjkhfsjdhf sdjhfskj skdjfhsdj fskdjf hsd fh", 25, Align.ALIGN_CENTER);
+                }else {
+                    bottomTextBitmap = addLineTextImage(null, urlString, 25, Align.ALIGN_CENTER);
+                    bottomTextBitmap = addLineTextImage(bottomTextBitmap,"sdkjhsdjkfhsdfss sjdhfsjkhfsjdhf sdjhfskj skdjfhsdj fskdjf hsd fh", 25, Align.ALIGN_CENTER);
+                }
                             /*
                              * Set grey level, print speed, dithering and density settings
                              */
@@ -748,7 +745,6 @@ public class MainActivity extends Activity {
 
     class ClientThread implements Runnable {
 
-
         private String serverIP;
         private int port;
         private String response;
@@ -756,7 +752,9 @@ public class MainActivity extends Activity {
         public ClientThread(String s, int p) {
             this.serverIP = s;
             this.port = p;
+            Log.w("#ClientThread#", "Construtor");
         }
+
 
 
         @Override
@@ -774,7 +772,7 @@ public class MainActivity extends Activity {
                     Log.i("#Socket#","A estabelecer uma ligação ao servidor...");
 
                     try {
-                        socket = new Socket(serverAddr, this.port);
+                        socket = new Socket(serverAddr, getResources().getInteger(R.integer.port));
                     } catch (IOException e) {
                         Log.e("#ClientThread#","Ligação socket falhou - " + e.getMessage() );
                         socket=null;
@@ -834,7 +832,7 @@ public class MainActivity extends Activity {
                     } catch (Exception e1) {
                         e1.printStackTrace();
                     }
-                    new Thread(new ClientThread("10.10.10.10", 5006)).start();
+                    new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();
 
 
 
@@ -945,7 +943,7 @@ public class MainActivity extends Activity {
         if (keepAlive)
             return true;
         else {
-            new Thread(new ClientThread("10.10.10.10", 5006)).start();
+            new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();
             return false;
         }
 

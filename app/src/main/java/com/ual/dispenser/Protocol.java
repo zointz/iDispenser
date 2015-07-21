@@ -56,7 +56,7 @@ public class Protocol {
             out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e("#Protocol#", " - Exception - " + e.toString());
+            Log.e("#Protocol#", " - Exception - " + e.getMessage());
         }
 
     }
@@ -138,11 +138,11 @@ public class Protocol {
                 break;
             case "TICKET":
                 splitedMessage = splitedProtocol[1].split(",");
-
                 Log.v("#Protocol# - ", "Message - "+splitedProtocol[1]);
 
-                ((MainActivity) context).createQRcode(splitedMessage[1]);
+                ((MainActivity) context).createQRcode(splitedMessage[1]+"asjdhakjh asjhd a ajkdh akjdh aksjdh aksd ");
                 ((MainActivity) context).printTicket(splitedMessage[0], splitedMessage[1]);
+
                 break;
 
             case "INACTIVE":
