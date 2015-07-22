@@ -26,6 +26,7 @@ import com.StarMicronics.jasura.JABarcodeGenerator.QR_CORRECTION_LEVEL;
 import com.StarMicronics.jasura.JABarcodeGenerator.QR_MODEL;
 import com.StarMicronics.jasura.JAException;
 import com.StarMicronics.jasura.JAPrinter;
+import com.StarMicronics.jasura.JAPower;
 import com.StarMicronics.jasura.JAPrinter.JAPrintDithering;
 import com.StarMicronics.jasura.JAPrinter.JAPrintSpeed;
 import com.StarMicronics.jasura.JAPrinterStatus;
@@ -38,7 +39,11 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -53,7 +58,7 @@ public class MainActivity extends Activity {
     public static TextView connection;
     public static String ticket = null;
 
-    public static Boolean keepAlive, inactive = false;
+    public static Boolean keepAlive, inactive = false, shutdown=false, socketStayClosed;
     private final int paperWidth = 576;
     private final int[] exitSequence = {0, 2, 2, 6, 8, 5, 12, 14, 8, 18};  //Sequência de saida
 
@@ -65,6 +70,7 @@ public class MainActivity extends Activity {
     private Handler handler = new Handler();
     private ImageButton analogClock, logo;
     private int exitCounter = 0;
+    private JAPower power;
     //  Criadas por asura
     /*
     private Button buttonPrint;
@@ -98,10 +104,43 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        socketStayClosed = false;
 
 
+        Log.w("#onCreate#", "Arranque método on create");
 
+        Toast.makeText(MainActivity.this, "O sistema irá desligar às " + getString(R.string.switchAzuraOff), Toast.LENGTH_LONG).show();
 
+        // Turn Asura off at defined time in res.strings.xml
+
+        Calendar rightNow = Calendar.getInstance();
+
+        // If not on UTC
+        long offset = rightNow.get(Calendar.ZONE_OFFSET) + rightNow.get(Calendar.DST_OFFSET);
+
+        long sinceMidnight = (rightNow.getTimeInMillis() + offset) %
+                (24 * 60 * 60 * 1000);
+        String [] time = getString(R.string.switchAzuraOff).split(":");
+
+        long shutdownTime =  (Integer.parseInt(time[0])*60+Integer.parseInt(time[1]))*60*1000-sinceMidnight;
+
+        if (shutdownTime <=10000) {
+            shutdownTime = shutdownTime + 86400000;
+        }
+        Log.w("#onCreate#", "Desligar às (Horas) " +getString(R.string.switchAzuraOff));
+        Log.w("#onCreate#", "Desligar dentro de (milisegundos) " + shutdownTime);
+        Log.w("#onCreate#", "Desde a meia noite " + sinceMidnight);
+
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                power = new JAPower();
+                Toast.makeText(MainActivity.this, "O sistema irá desligar às " + getString(R.string.switchAzuraOff), Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "Sistema a desligar !", Toast.LENGTH_LONG).show();
+                    shutdown=true;
+                    onDestroy();
+            }
+        }, shutdownTime - sinceMidnight);
+        Log.w("#onCreate#", "Handler timer criado com sucesso");
 
 /*
         Process proc = null;
@@ -272,7 +311,6 @@ public class MainActivity extends Activity {
                          */
                         status = printer.status();
                         printerLock.notifyAll();
-
                     }
                 } catch (JAException e) {
                     Toast.makeText(MainActivity.this, "Failed to get printer status", Toast.LENGTH_SHORT).show();
@@ -302,7 +340,7 @@ public class MainActivity extends Activity {
         /*
          *  Start socket
          */
-        new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();
+        startSocket();
 
         //        try {
         //            new zzzTransportMessage(socket).send("222Hello from Asura CPRN!");
@@ -329,15 +367,19 @@ public class MainActivity extends Activity {
                     //  Inicia o envio do request
                     try {
                         if (new Protocol(socket, MainActivity.this).sendMessage("Request:" + departamento)) {
-                            Log.w("#inClickListener#", "Btn1 sends - " + departamento);
+                            Log.v("#inClickListener#", "Btn1 sends - " + departamento);
                         } else {
                             Toast.makeText(MainActivity.this, R.string.server_Connection_Error, Toast.LENGTH_LONG).show();
                             Log.e("#inClickListener#"," - Btn1 - Error sending message");
-                            new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();
+                            startSocket();
                         }
                     } catch (Exception e) {
-                        Log.e("#inClickListener#", "- Btn1 - Catch you, trying to reconnect ! ", e);
-                        new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();                    }
+                        e.printStackTrace();
+                        Log.e("#inClickListener#", "- Btn1 - Catch you, trying to reconnect ! ");
+                        startSocket();
+                    }
+
+
                     break;
 
                 case R.id.button2:
@@ -348,15 +390,17 @@ public class MainActivity extends Activity {
                     //  Inicia o envio do request
                     try {
                         if (new Protocol(socket, MainActivity.this).sendMessage("Request:" + departamento)) {
-                            Log.w("#inClickListener#", "Btn2 sends - " + departamento);
+                            Log.v("#inClickListener#", "Btn2 sends - " + departamento);
                         } else {
                             Toast.makeText(MainActivity.this, R.string.server_Connection_Error, Toast.LENGTH_LONG).show();
                             Log.e("#inClickListener#"," - Btn2 - Error sending message");
-                            new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();
+                            startSocket();
                         }
                     } catch (Exception e) {
-                        Log.e("#inClickListener#", "- Btn2 - Catch you, trying to reconnect ! ", e);
-                        new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();                    }
+                        e.printStackTrace();
+                        Log.e("#inClickListener#", "- Btn2 - Catch you, trying to reconnect ! ");
+                        startSocket();
+                    }
                     break;
 
 
@@ -368,14 +412,16 @@ public class MainActivity extends Activity {
                     //  Inicia o envio do request
                     try {
                         if (new Protocol(socket, MainActivity.this).sendMessage("Request:" + departamento)) {
-                            Log.w("#inClickListener#", "Btn3 sends - " + departamento);
+                            Log.v("#inClickListener#", "Btn3 sends - " + departamento);
                         } else {
                             Toast.makeText(MainActivity.this, R.string.server_Connection_Error, Toast.LENGTH_LONG).show();
                             Log.e("#inClickListener#"," - Btn3 - Error sending message");
-                            new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();                        }
+                            startSocket();
+                        }
                     } catch (Exception e) {
-                        Log.e("#inClickListener#", "- Btn3 - Catch you, trying to reconnect ! ", e);
-                        new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();
+                        e.printStackTrace();
+                        Log.e("#inClickListener#", "- Btn3 - Catch you, trying to reconnect ! ");
+                        startSocket();
                     }
                     break;
 
@@ -387,15 +433,16 @@ public class MainActivity extends Activity {
                     //  Inicia o envio do request
                     try {
                         if (new Protocol(socket, MainActivity.this).sendMessage("Request:" + departamento)) {
-                            Log.w("#inClickListener#", "Btn4 sends - " + departamento);
+                            Log.v("#inClickListener#", "Btn4 sends - " + departamento);
                         } else {
                             Toast.makeText(MainActivity.this, R.string.server_Connection_Error, Toast.LENGTH_LONG).show();
                             Log.e("#inClickListener#"," - Btn4 - Error sending message");
-                            new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();
+                            startSocket();
                         }
                     } catch (Exception e) {
-                        Log.e("#inClickListener#", "- Btn4 - Catch you, trying to reconnect ! ", e);
-                        new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();
+                        e.printStackTrace();
+                        Log.e("#inClickListener#", "- Btn4 - Catch you, trying to reconnect ! ");
+                        startSocket();
                     }
                     break;
 
@@ -407,15 +454,16 @@ public class MainActivity extends Activity {
                     //  Inicia o envio do request
                     try {
                         if (new Protocol(socket, MainActivity.this).sendMessage("Request:" + departamento)) {
-                            Log.w("#inClickListener#", "Btn5 sends - " + departamento);
+                            Log.v("#inClickListener#", "Btn5 sends - " + departamento);
                         } else {
                             Toast.makeText(MainActivity.this, R.string.server_Connection_Error, Toast.LENGTH_LONG).show();
                             Log.e("#inClickListener#"," - Btn5 - Error sending message");
-                            new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();
+                            startSocket();
                         }
                     } catch (Exception e) {
-                        Log.e("#inClickListener#", "- Btn5 - Catch you, trying to reconnect ! ", e);
-                        new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();
+                        e.printStackTrace();
+                        Log.e("#inClickListener#", "- Btn5 - Catch you, trying to reconnect ! ");
+                        startSocket();
                     }
                     break;
 
@@ -437,18 +485,14 @@ public class MainActivity extends Activity {
 
     private void exitSequenceTest(int code) {
 
-        Log.d("exitSequenceTest - ", code + "");
+        Log.w("#exitSequenceTest#", "Código premido - " + code);
 
         if (code != exitSequence[exitCounter]) {
-            Log.d("Sequencia Errada -", code + ", Devia ser" + exitSequence[exitCounter]);
-            //ToneGenerator toneG = new ToneGenerator(AudioManager.STREAM_ALARM, 100);
-            //toneG.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 200);
+            Log.e("#exitSequenceTest#","Sequencia Errada - fez "+ code + "mas devia ter feito " + exitSequence[exitCounter]);
 
             // Tom - primeiro valor é o volume, o segundo valor é a duração
             new ToneGenerator(AudioManager.STREAM_SYSTEM, 100).startTone(AudioManager.STREAM_SYSTEM, 10);
-
             exitCounter = 0;
-
 
         } else if (exitCounter == 4) {
 /*
@@ -469,7 +513,7 @@ public class MainActivity extends Activity {
             finish();
         } else {
             exitCounter++;
-            Log.d("Counter-", " " + exitCounter);
+            Log.d("#exitSequenceTest#","Counter-" + exitCounter);
         }
 
 
@@ -481,23 +525,14 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
+        socketStayClosed=true;
         try {
             printer.ledSet((byte) 20, (byte) 20, (byte) 20);
         } catch (JAException e) {
             e.printStackTrace();
         }
 
-        // Close Socket
-        try {
-            if (socket != null) {
-                socket.shutdownOutput();
-                socket.close();
-            }
 
-        } catch (IOException e) {
-            //ignore
-        }
 
         //  finish to use printer
         try {
@@ -508,6 +543,29 @@ public class MainActivity extends Activity {
         } catch (JAException e) {
             // ignore
         }
+
+
+        // Close Socket
+        try {
+            if (socket != null) {
+                //socket.shutdownOutput();
+                socket.close();
+
+            }
+
+        } catch (IOException e) {
+            //ignore
+        }
+
+        // In case of shutdown flag is true, then shutdown Asura
+        if (shutdown) {
+            try {
+                power.shutdown();
+            } catch (JAException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
 
@@ -518,139 +576,64 @@ public class MainActivity extends Activity {
 
     public void printTicket(String ticket, String urlString) {
 
-
-        //Alguma côr
+        //Alguma côr - Luz verde durante a impressão
         try {
             printer.ledSet((byte) 0, (byte) 100, (byte) 0);
 
         } catch (JAException e) {
             e.printStackTrace();
         }
-        // Construction text of the ticket
-/*
-        textBitmap = addLineTextImage(textBitmap, " ", 20, Align.ALIGN_CENTER);
-        textBitmap = addLineTextImage(textBitmap, "Senha Nº" + ticket, 60, Align.ALIGN_CENTER);
-        textBitmap = addLineTextImage(textBitmap, " ", 20, Align.ALIGN_CENTER);
-        textBitmap = addLineTextImage(textBitmap, java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()), 24, Align.ALIGN_CENTER);
-        bottomTextBitmap = addLineTextImage(null, urlString, 30, Align.ALIGN_CENTER);*/
+
         try {
-//Bitmap imageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ual_horizontal);
-//imageBitmap = Bitmap.createScaledBitmap(imageBitmap, 279, 110, true);
-
             synchronized (printerLock) {
-                // Construction text of the ticket
 
+                // Construction text of the ticket
                 textBitmap = addLineTextImage(textBitmap, " ", 20, Align.ALIGN_CENTER);
                 textBitmap = addLineTextImage(textBitmap, "Senha Nº" + ticket, 60, Align.ALIGN_CENTER);
                 textBitmap = addLineTextImage(textBitmap, " ", 20, Align.ALIGN_CENTER);
                 textBitmap = addLineTextImage(textBitmap, java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()), 24, Align.ALIGN_CENTER);
-                //url deverá ser sempre inferior a 40
-                if (urlString.length()>41){
-                    bottomTextBitmap = addLineTextImage(null, urlString.substring(0, 41), 25, Align.ALIGN_CENTER);
-               //     bottomTextBitmap = addLineTextImage(bottomTextBitmap,urlString.substring(41,urlString.length()), 25, Align.ALIGN_CENTER);
-                    bottomTextBitmap = addLineTextImage(bottomTextBitmap,"sdkjhsdjkfhsdfss sjdhfsjkhfsjdhf sdjhfskj skdjfhsdj fskdjf hsd fh", 25, Align.ALIGN_CENTER);
-                }else {
+
+                //url deverá ser sempre inferior a 90 caracteres
+                if (urlString.length()>45){
+                    bottomTextBitmap = addLineTextImage(null, urlString.substring(0, 45), 25, Align.ALIGN_CENTER);
+                    bottomTextBitmap = addLineTextImage(bottomTextBitmap,urlString.substring(45,urlString.length()), 25, Align.ALIGN_CENTER);
+               }else {
                     bottomTextBitmap = addLineTextImage(null, urlString, 25, Align.ALIGN_CENTER);
-                    bottomTextBitmap = addLineTextImage(bottomTextBitmap,"sdkjhsdjkfhsdfss sjdhfsjkhfsjdhf sdjhfskj skdjfhsdj fskdjf hsd fh", 25, Align.ALIGN_CENTER);
                 }
-                            /*
-                             * Set grey level, print speed, dithering and density settings
-                             */
+
+                // Set grey level, print speed, dithering and density settings
                 printer.setGrayLevel(1);
                 printer.setPrintSpeed(JAPrintSpeed.JAPRINT_SPEED_HIGH);
+               // printer.setPrintSpeed(JAPrintSpeed.JAPRINT_SPEED_MEDIUM);
                 printer.setDithering(JAPrintDithering.JAPRINT_DITHERING_NONE);
                 printer.setDensity(0);
-                             /*
-                            switch (radioGroupGrey.getCheckedRadioButtonId()) {
-                                case R.id.radioGreylevel1: // Grey Level 1
-                                    printer.setGrayLevel(1);
-                                    break;
 
-                                case R.id.radioGreyLevel8: // Grey Level 8
-                                    printer.setGrayLevel(8);
-                                    break;
+                // Start to print job
 
-                                case R.id.radioGreyLevel16: // Grey Level 16
-                                    printer.setGrayLevel(16);
-                                    break;
-
-                                case R.id.radioGreyLevel32: // Grey Level 32
-                                    printer.setGrayLevel(32);
-                                    break;
-
-                                default: // Default: Grey Level 8
-                                    printer.setGrayLevel(8);
-                                    break;
-                            }
-
-                            switch (radioGroupSpeed.getCheckedRadioButtonId()) {
-                                case R.id.radioSpeedFull: // Print Speed High
-                                    printer.setPrintSpeed(JAPrintSpeed.JAPRINT_SPEED_HIGH);
-                                    break;
-
-                                case R.id.radioSpeedMedium: // Print Speed Medium
-                                    printer.setPrintSpeed(JAPrintSpeed.JAPRINT_SPEED_MEDIUM);
-                                    break;
-
-                                case R.id.radioSpeedLow: // Print Speed Low
-                                    printer.setPrintSpeed(JAPrintSpeed.JAPRINT_SPEED_LOW);
-                                    break;
-
-                                default: // Default: Print Speed High
-                                    printer.setPrintSpeed(JAPrintSpeed.JAPRINT_SPEED_HIGH);
-                                    break;
-                            }
-
-                            if (checkBoxDithering.isChecked() == true) {
-                                printer.setDithering(JAPrintDithering.JAPRINT_DITHERING_ERROR_DIFFUSION);
-                            } else {
-                                printer.setDithering(JAPrintDithering.JAPRINT_DITHERING_NONE);
-                            }
-
-                            printer.setDensity((seekBarDensity.getProgress() - 3));
-                            */
-                            /*
-                             * Start to print job
-                             */
+                //Logo da Ual
                 printer.printBitmapImage(logoBitmap);
+                //Espaço de 3mm
+                printer.feedMM(3);
 
-                printer.feedMM(5);
-
+                //Nome do departamento, e numero de senha
                 printer.printBitmapImage(textBitmap);
-
+                textBitmap=null;
+                //Espaço de 3mm
                 printer.feedMM(5);
 
-                // printer.printBitmapImage(barcodeBitmap_39);
-
-                //printer.feedMM(5);
-
-                //printer.printBitmapImage(barcodeBitmap_93);
-
-                //printer.feedMM(5);
-
-                //printer.printBitmapImage(barcodeBitmap_128);
-
-                //printer.feedMM(5);
-
-
+                //QR Code
                 printer.printBitmapImage(barcodeBitmap_QR);
+                barcodeBitmap_QR=null;
+                //Espaço de 3mm
+                printer.feedMM(3);
 
-                printer.feedMM(5);
-
+                //URL de acesso e senha para remotePanel
                 printer.printBitmapImage(bottomTextBitmap);
-
-                //printer.printBitmapImage(barcodeBitmap_EAN8);
-
-                //printer.feedMM(5);
-
-                //printer.printBitmapImage(barcodeBitmap_EAN13);
-
-                //printer.feedMM(5);
-
-                //printer.printBitmapImage(couponBitmap);
-
+                bottomTextBitmap=null;
+                //Corte de Papel
                 printer.cut(true);
 
+                //release
                 printerLock.notifyAll();
                 printer.ledGradualShift(2000, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 73, (byte) 100);
             }
@@ -671,6 +654,7 @@ public class MainActivity extends Activity {
 
         FontMetrics fontMetrics = paint.getFontMetrics();
         int textWidth = (int) Math.ceil(paint.measureText(lineText));
+
         int textHeight = (int) Math.ceil(Math.abs(fontMetrics.ascent) + Math.abs(fontMetrics.descent) + Math.abs(fontMetrics.leading));
 
         switch (align) {
@@ -693,10 +677,14 @@ public class MainActivity extends Activity {
 
         if (dstBitmap == null) {
             expandedBitmap = Bitmap.createBitmap(textWidth + alignment, textHeight, Bitmap.Config.RGB_565);
+
         } else {
+
             if (textWidth + alignment < dstBitmap.getWidth()) {
+
                 textWidth = dstBitmap.getWidth();
             } else {
+
                 textWidth += alignment;
             }
             expandedBitmap = Bitmap.createBitmap(textWidth, textHeight + dstBitmap.getHeight(), Bitmap.Config.RGB_565);
@@ -711,7 +699,7 @@ public class MainActivity extends Activity {
             canvasText.drawBitmap(dstBitmap, 0, 0, paint);
             canvasText.drawText(lineText, alignment, dstBitmap.getHeight() + Math.abs(paint.getFontMetrics().ascent), paint);
         }
-
+        Log.w("#addLineTextImage#","Até aqui foi rápido "+lineText);
         return expandedBitmap;
     }
 
@@ -786,22 +774,7 @@ public class MainActivity extends Activity {
                 } while ((socket == null) || socket.isClosed());
                 Log.i("#Socket#","Ligação estabelecida :)");
 
-              /*  socket = null;
-                while (true) {
-                    try {
-                        socket = new Socket(serverAddr, 1234);
-                        if (socket != null) { break; }
-                    }
-                    catch (IOException e) {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e1) {
-                            e1.printStackTrace();
-                        }
-                    }
-                }*/
-
-
+        
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
                 byte[] buffer = new byte[1024];
                 int bytesRead;
@@ -818,25 +791,32 @@ public class MainActivity extends Activity {
 
                 try {
                     while ((bytesRead = inputStream.read(buffer)) != -1) {
-                        Log.e("#ClientThread#", " inputstream - " + inputStream.available());
+                        Log.wtf("#ClientThread#", " inputstream - " + inputStream.available());
+                        Log.wtf("#ClientThread#", " inputstream - a");
                         byteArrayOutputStream.write(buffer, 0, bytesRead);
+                        Log.wtf("#ClientThread#", " inputstream - b");
                         response = byteArrayOutputStream.toString("UTF-8");
+                        Log.wtf("#ClientThread#", " inputstream - c");
                         updateConversationHandler.post(new updateUIThread(response));
+                        Log.wtf("#ClientThread#", " inputstream - d");
+
                         byteArrayOutputStream.reset();
+                        Log.wtf("#ClientThread#", " inputstream - e");
+                      /*  try {
+                         //   Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }*/
                     }
                 } catch (SocketException e) {
-                    e.printStackTrace();
-                    Log.e("#ClientThread#", e.getMessage());
+                    Log.e("#ClientThread#", "e.fillInStackTrace()",e.fillInStackTrace());
                     try {
                         new buttonsControl(MainActivity.this).showConnection(MAXBUTTONS);
                     } catch (Exception e1) {
                         e1.printStackTrace();
                     }
-                    new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();
-
-
-
-                }
+                        startSocket();
+                    }
 
 
             } catch (UnknownHostException e1) {
@@ -943,11 +923,21 @@ public class MainActivity extends Activity {
         if (keepAlive)
             return true;
         else {
-            new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();
+            startSocket();
             return false;
         }
 
     }
+
+public void startSocket(){
+    if (socketStayClosed){
+
+    }
+    else {
+        new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();
+    }
+}
+
 
 }
 
