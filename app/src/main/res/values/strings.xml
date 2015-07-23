@@ -6,8 +6,8 @@
     <string name="inactive">Departamento inactivo, por favor tente mais tarde. Obrigado !</string>
     <string name="server_Connection_Error">Falha na ligação ao servidor, tente novamente.</string>
 
-    <string name="serverIP">10.10.10.150</string>
-
+    <!--<string name="serverIP">10.10.10.150</string>-->
+    <string name="serverIP">192.168.16.31</string>
     <!-- Hora desligar Asura-->
     <string name="switchAzuraOff">22:10</string>
     <integer name="port">5006</integer>

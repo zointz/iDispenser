@@ -139,7 +139,7 @@ public class MainActivity extends Activity {
                     shutdown=true;
                     onDestroy();
             }
-        }, shutdownTime - sinceMidnight);
+        }, shutdownTime);
         Log.w("#onCreate#", "Handler timer criado com sucesso");
 
 /*
