@@ -9,6 +9,6 @@
     <!--<string name="serverIP">10.10.10.150</string>-->
     <string name="serverIP">192.168.16.31</string>
     <!-- Hora desligar Asura-->
-    <string name="switchAzuraOff">22:10</string>
+    <string name="switchAzuraOff">21:20</string>
     <integer name="port">5006</integer>
 </resources>

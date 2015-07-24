@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -19,6 +20,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.StarMicronics.jasura.JABarcodeGenerator;
 import com.StarMicronics.jasura.JABarcodeGenerator.QR_CELL_SIZE;
@@ -61,10 +63,11 @@ public class MainActivity extends Activity {
     public static Boolean keepAlive, inactive = false, shutdown=false, socketStayClosed;
     private final int paperWidth = 576;
     private final int[] exitSequence = {0, 2, 2, 6, 8, 5, 12, 14, 8, 18};  //Sequência de saida
-
+    VideoView videoview;
 
     //  Private
     private Button txtDateButton;
+    private Button code1,code2;
     private Socket socket;
     private Handler updateConversationHandler;
     private Handler handler = new Handler();
@@ -105,6 +108,24 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
 
         socketStayClosed = false;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         Log.w("#onCreate#", "Arranque método on create");
@@ -176,12 +197,56 @@ public class MainActivity extends Activity {
 
             setContentView(R.layout.activity_main);
 
+
+
+
+
+
+            videoview = (VideoView) findViewById(R.id.videoView);
+
+            Uri uri = Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.ual3);
+
+            videoview.setVideoURI(uri);
+
+            videoview.start();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             //  Handler dos botões
             ticketButton[0] = (Button) findViewById(R.id.button1);
             ticketButton[1] = (Button) findViewById(R.id.button2);
             ticketButton[2] = (Button) findViewById(R.id.button3);
             ticketButton[3] = (Button) findViewById(R.id.button4);
             ticketButton[4] = (Button) findViewById(R.id.button5);
+            code1 = (Button) findViewById(R.id.code1);
+            code2 = (Button) findViewById(R.id.code2);
             connection = (TextView) findViewById(R.id.connection);
             // analogClock = (Button) findViewById(R.id.analogClock);
             logo = (ImageButton) findViewById(R.id.logo);
@@ -198,6 +263,9 @@ public class MainActivity extends Activity {
             ticketButton[2].setOnClickListener(listener);
             ticketButton[3].setOnClickListener(listener);
             ticketButton[4].setOnClickListener(listener);
+            code1.setOnClickListener(listener);
+            code2.setOnClickListener(listener);
+
             logo.setOnClickListener(listener);
             txtDateButton.setOnClickListener(listener);
 
@@ -360,6 +428,7 @@ public class MainActivity extends Activity {
             switch (v.getId()) {
 
                 case R.id.button1:
+                    videoview.start();
                     // Identificar o texto do botão
                     departamento = ticketButton[0].getText().toString();
                     //  Começa a preencher o textBitmap com o conteudo do botão
@@ -383,6 +452,7 @@ public class MainActivity extends Activity {
                     break;
 
                 case R.id.button2:
+                    videoview.start();
                     // Identificar o texto do botão
                     departamento = ticketButton[1].getText().toString();
                     //  Começa a preencher o textBitmap com o conteudo do botão
@@ -405,6 +475,7 @@ public class MainActivity extends Activity {
 
 
                 case R.id.button3:
+                    videoview.start();
                     // Identificar o texto do botão
                     departamento = ticketButton[2].getText().toString();
                     //  Começa a preencher o textBitmap com o conteudo do botão
@@ -426,6 +497,7 @@ public class MainActivity extends Activity {
                     break;
 
                 case R.id.button4:
+                    videoview.start();
                     // Identificar o texto do botão
                     departamento = ticketButton[3].getText().toString();
                     //  Começa a preencher o textBitmap com o conteudo do botão
@@ -447,6 +519,7 @@ public class MainActivity extends Activity {
                     break;
 
                 case R.id.button5:
+                    videoview.start();
                     // Identificar o texto do botão
                     departamento = ticketButton[4].getText().toString();
                     //  Começa a preencher o textBitmap com o conteudo do botão
@@ -474,6 +547,16 @@ public class MainActivity extends Activity {
                 case (R.id.logo):
                     exitSequenceTest(2 * exitCounter);
                     break;
+
+
+                case R.id.code1:
+                    exitSequenceTest(2 * exitCounter);
+                    break;
+
+                case (R.id.code2):
+                    exitSequenceTest(1 * exitCounter);
+                    break;
+
             }
         }
     };
@@ -494,7 +577,7 @@ public class MainActivity extends Activity {
             new ToneGenerator(AudioManager.STREAM_SYSTEM, 100).startTone(AudioManager.STREAM_SYSTEM, 10);
             exitCounter = 0;
 
-        } else if (exitCounter == 4) {
+        } else if (exitCounter == 5) {
 /*
             Process proc = null;
             try {
