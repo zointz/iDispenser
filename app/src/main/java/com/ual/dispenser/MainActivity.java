@@ -41,11 +41,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -108,24 +104,6 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
 
         socketStayClosed = false;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         Log.w("#onCreate#", "Arranque método on create");
@@ -201,7 +179,6 @@ public class MainActivity extends Activity {
 
 
 
-
             videoview = (VideoView) findViewById(R.id.videoView);
 
             Uri uri = Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.ual3);
@@ -209,34 +186,6 @@ public class MainActivity extends Activity {
             videoview.setVideoURI(uri);
 
             videoview.start();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
             //  Handler dos botões
@@ -355,14 +304,17 @@ public class MainActivity extends Activity {
          blue2	This is the blue component for the second color in the gradual shift. This should be 0 to 100.
          *********************************************************************************************/
 
-        try {
-            printer.ledReset();
-            printer.ledGradualShift(1000, (byte) 0, (byte) 0, (byte) 0, (byte) 100, (byte) 30, (byte) 0);
-            //printer.ledGradualShift(2000, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 73, (byte) 100);
-            // printer.ledGradualShift (2000,(byte)100, (byte)100, (byte)0, (byte)0,(byte)0, (byte) 0);
+        /*try {
+            if (!socketStayClosed) {
+            //    printer.ledReset();
+              printer.ledGradualShift(1000, (byte) 0, (byte) 0, (byte) 0, (byte) 100, (byte) 30, (byte) 0);
+                Log.w("#OnCreate#", " Led urgente");
+                //printer.ledGradualShift(2000, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 73, (byte) 100);
+                // printer.ledGradualShift (2000,(byte)100, (byte)100, (byte)0, (byte)0,(byte)0, (byte) 0);
+            }
         } catch (JAException e) {
             e.printStackTrace();
-        }
+        }*/
 
         /*
          *  Start to polling printer status
@@ -607,14 +559,17 @@ public class MainActivity extends Activity {
      */
     @Override
     protected void onDestroy() {
+
         super.onDestroy();
+
+
         socketStayClosed=true;
         try {
-            printer.ledSet((byte) 20, (byte) 20, (byte) 20);
+            printer.ledReset();
+            printer.ledGradualShift(3000, (byte) 0, (byte) 0, (byte) 0, (byte) 100, (byte) 100, (byte) 100);
         } catch (JAException e) {
             e.printStackTrace();
         }
-
 
 
         //  finish to use printer
@@ -657,7 +612,7 @@ public class MainActivity extends Activity {
      * Impressão do ticket
      */
 
-    public void printTicket(String ticket, String urlString) {
+    public void printTicket(String ticket, String urlString, String easyUrl) {
 
         //Alguma côr - Luz verde durante a impressão
         try {
@@ -676,13 +631,21 @@ public class MainActivity extends Activity {
                 textBitmap = addLineTextImage(textBitmap, " ", 20, Align.ALIGN_CENTER);
                 textBitmap = addLineTextImage(textBitmap, java.text.DateFormat.getDateTimeInstance().format(Calendar.getInstance().getTime()), 24, Align.ALIGN_CENTER);
 
+                easyUrl =  easyUrl.substring(0, easyUrl.length() - 1);
+
+                String[] code = urlString.split("=");
                 //url deverá ser sempre inferior a 90 caracteres
-                if (urlString.length()>45){
-                    bottomTextBitmap = addLineTextImage(null, urlString.substring(0, 45), 25, Align.ALIGN_CENTER);
-                    bottomTextBitmap = addLineTextImage(bottomTextBitmap,urlString.substring(45,urlString.length()), 25, Align.ALIGN_CENTER);
+                if (easyUrl.length()>45){
+                    bottomTextBitmap = addLineTextImage(null, easyUrl.substring(0, 45), 25, Align.ALIGN_CENTER);
+                    bottomTextBitmap = addLineTextImage(bottomTextBitmap,easyUrl.substring(45,easyUrl.length()), 25, Align.ALIGN_CENTER);
                }else {
-                    bottomTextBitmap = addLineTextImage(null, urlString, 25, Align.ALIGN_CENTER);
+                    bottomTextBitmap = addLineTextImage(null, easyUrl, 25, Align.ALIGN_CENTER);
                 }
+                bottomTextBitmap = addLineTextImage(bottomTextBitmap,"Código -" + code[1], 25, Align.ALIGN_CENTER);
+
+
+
+
 
                 // Set grey level, print speed, dithering and density settings
                 printer.setGrayLevel(1);
@@ -840,9 +803,19 @@ public class MainActivity extends Activity {
 
                 do {
                     socket = null;
-                    Log.i("#Socket#","A estabelecer uma ligação ao servidor...");
+                    Log.i("#Socket#", "A estabelecer uma ligação ao servidor...");
 
                     try {
+                       // Toast.makeText(MainActivity. "Hello", Toast.LENGTH_SHORT).show();
+
+                        // new buttonsControl(MainActivity.this).showTryingConnection(MAXBUTTONS);
+
+                        try {
+                            printer.ledGradualShift(500
+                                    , (byte) 0, (byte) 0, (byte) 0, (byte) 100, (byte) 20, (byte) 0);
+                        } catch (JAException e) {
+                            e.printStackTrace();
+                        }
                         socket = new Socket(serverAddr, getResources().getInteger(R.integer.port));
                     } catch (IOException e) {
                         Log.e("#ClientThread#","Ligação socket falhou - " + e.getMessage() );
@@ -894,7 +867,7 @@ public class MainActivity extends Activity {
                 } catch (SocketException e) {
                     Log.e("#ClientThread#", "e.fillInStackTrace()",e.fillInStackTrace());
                     try {
-                        new buttonsControl(MainActivity.this).showConnection(MAXBUTTONS);
+                        new buttonsControl(MainActivity.this).showTryingConnection(MAXBUTTONS);
                     } catch (Exception e1) {
                         e1.printStackTrace();
                     }
@@ -1014,7 +987,6 @@ public class MainActivity extends Activity {
 
 public void startSocket(){
     if (socketStayClosed){
-
     }
     else {
         new Thread(new ClientThread(getString(R.string.serverIP), getResources().getInteger(R.integer.port))).start();

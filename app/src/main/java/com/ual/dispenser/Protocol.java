@@ -138,12 +138,13 @@ public class Protocol {
                 break;
             case "TICKET":
                 splitedMessage = splitedProtocol[1].split(",");
-                Log.v("#Protocol# - ", "Message - " + splitedProtocol[1]);
 
-                ((MainActivity) context).createQRcode(splitedMessage[1]+"ZtesteZkappcfZdfnsddsfsdfsfZsfsdfsZsdfsdfZsdfsdfsdfZdsfsdfsdZsdfsdfZZ");
-                 //??==?===()Z&%$#%&/$()=
-                ((MainActivity) context).printTicket(splitedMessage[0], splitedMessage[1] + "ZtesteZkappcfZdfnsddsfsdfsfZsfsdfsZsdfsdfZsdfsdfsdfZdsfsdfsdZsdfsdfZZ");
-                       //??==?===()Z&%$#%&/$()=
+                Log.w("#Protocol#", "Message - " + splitedProtocol[1]);
+
+                ((MainActivity) context).createQRcode(splitedMessage[1]);
+
+                ((MainActivity) context).printTicket(splitedMessage[0], splitedMessage[1], splitedMessage[2]);
+
 
                 break;
 

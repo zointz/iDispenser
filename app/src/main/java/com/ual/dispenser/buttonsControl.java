@@ -25,7 +25,7 @@ public class buttonsControl {
      * @param numberButtons
      */
 
-    public void showConnection(final int numberButtons) {
+    public void showTryingConnection(final int numberButtons) {
 
         ((MainActivity)context).runOnUiThread(new Runnable() {
             @Override
@@ -35,7 +35,10 @@ public class buttonsControl {
                     MainActivity.ticketButton[i].setVisibility(View.GONE);
                 }
                 try {
-                    ((MainActivity)context).printer.ledGradualShift(1000, (byte) 0, (byte) 0, (byte) 0, (byte) 100, (byte) 20, (byte) 0);
+                    if (!MainActivity.socketStayClosed) {
+                        ((MainActivity) context).printer.ledGradualShift(500
+                                , (byte) 0, (byte) 0, (byte) 0, (byte) 100, (byte) 20, (byte) 0);
+                    }
                 } catch (JAException e) {
                     e.printStackTrace();
                 }

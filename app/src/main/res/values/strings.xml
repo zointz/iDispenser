@@ -1,14 +1,19 @@
 <resources>
     <string name="app_name">Dispenser</string>
-
     <string name="action_settings">Settings</string>
     <string name= "establishing_connection">A estabelecer ligacao ao servidor...\n\n Por favor Aguarde !</string>
     <string name="inactive">Departamento inactivo, por favor tente mais tarde. Obrigado !</string>
     <string name="server_Connection_Error">Falha na ligação ao servidor, tente novamente.</string>
+    <string name="retrying">Nova tentativa de ligação... Por favor aguarde</string>
 
-    <!--<string name="serverIP">10.10.10.150</string>-->
-    <string name="serverIP">192.168.16.31</string>
-    <!-- Hora desligar Asura-->
-    <string name="switchAzuraOff">21:20</string>
-    <integer name="port">5006</integer>
+
+    <!-- Definir a hora desligar Asura-->
+    <string name="switchAzuraOff">19:23</string>
+
+    <!-- Definir o IP do servidor </string>-->
+    <string name="serverIP">192.168.1.8</string>
+
+    <!-- Defenir o Porto do servidor-->
+    <integer name="port">5007</integer>
+
 </resources>

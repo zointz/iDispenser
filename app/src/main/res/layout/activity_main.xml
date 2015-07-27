@@ -109,7 +109,7 @@
                 android:background="#ff0076a3"
 
                 android:textColor="#ffffffff"
-                android:textSize="40dp"
+                android:textSize="38dp"
                 android:padding="30dp"
                 android:gravity="center"
                 android:textStyle="bold|italic"
