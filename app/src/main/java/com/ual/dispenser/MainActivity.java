@@ -598,7 +598,6 @@ public class MainActivity extends Activity {
     }
 
 
-
     /*
      * Impressão do ticket
      */
