@@ -323,7 +323,7 @@ public class MainActivity extends Activity {
 
             videoview = (VideoView) findViewById(R.id.videoView);
 
-            Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.ualVideo);
+            Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.ualvideo);
 
             videoview.setVideoURI(uri);
 
@@ -364,7 +364,7 @@ public class MainActivity extends Activity {
         /*
          *  Generate logo Bitmap from resource and align it center for sample receipt
          */
-            Bitmap loadLogoBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ualLogo); // add a image from resources
+            Bitmap loadLogoBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.uallogo); // add a image from resources
             loadLogoBitmap = Bitmap.createScaledBitmap(loadLogoBitmap, 291, 200, true); // set size to ignore scale
             int alignLogoCenter = (paperWidth - loadLogoBitmap.getWidth()) / 2;
             logoBitmap = Bitmap.createBitmap(loadLogoBitmap.getWidth() + alignLogoCenter, loadLogoBitmap.getHeight(), Bitmap.Config.RGB_565);
@@ -400,35 +400,37 @@ public class MainActivity extends Activity {
             public void run() {
                 try {
                     synchronized (printerLock) {
+
                         /*
                          * Initialize JAPrinterStatus
                          */
                         status = printer.status();
                         printerLock.notifyAll();
+
                     }
                 } catch (JAException e) {
-                    Toast.makeText(MainActivity.this, "Failed to get printer status", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, R.string.prnFailedStatus, Toast.LENGTH_SHORT).show();
                 }
 
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
                         if (status.offline == true) {
-                            Toast.makeText(MainActivity.this, "Impressora Offline", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, R.string.prnOffline, Toast.LENGTH_SHORT).show();
                         }
                         if (status.receiptPaperEmpty == true) {
-                            Toast.makeText(MainActivity.this, "Sem Papel", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, R.string.prnNoPaper, Toast.LENGTH_SHORT).show();
                         } else if (status.receiptPaperLow == true) {
-                            Toast.makeText(MainActivity.this, "Papel a terminar", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, R.string.prnLowPaper, Toast.LENGTH_SHORT).show();
                         }
                         if (status.coverOpen == true) {
-                            Toast.makeText(MainActivity.this, "Portinhola aberta", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, R.string.prnOpen, Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
             }
 
-        }, 0, 500, TimeUnit.MILLISECONDS);
+        }, 0, 4000, TimeUnit.MILLISECONDS);
 
 
         /*
@@ -544,11 +546,12 @@ public class MainActivity extends Activity {
                 String[] code = urlString.split("=");
                 //url deverá ser sempre inferior a 90 caracteres
 
+                bottomTextBitmap = addLineTextImage(null, getString(R.string.QRcodeUse), 25, Align.ALIGN_CENTER);
                 if (easyUrl.length() > 45) {
-                    bottomTextBitmap = addLineTextImage(null, easyUrl.substring(0, 45), 25, Align.ALIGN_CENTER);
+                    bottomTextBitmap = addLineTextImage(bottomTextBitmap, easyUrl.substring(0, 45), 25, Align.ALIGN_CENTER);
                     bottomTextBitmap = addLineTextImage(bottomTextBitmap, easyUrl.substring(45, easyUrl.length()), 25, Align.ALIGN_CENTER);
                 } else {
-                    bottomTextBitmap = addLineTextImage(null, easyUrl, 25, Align.ALIGN_CENTER);
+                    bottomTextBitmap = addLineTextImage(bottomTextBitmap, easyUrl, 25, Align.ALIGN_CENTER);
                 }
                 bottomTextBitmap = addLineTextImage(bottomTextBitmap, "Código -" + code[1], 25, Align.ALIGN_CENTER);
 
@@ -576,20 +579,20 @@ public class MainActivity extends Activity {
                 printer.printBitmapImage(barcodeBitmap_QR);
                 barcodeBitmap_QR = null;
                 //Espaço de 3mm
-                printer.feedMM(3);
+                printer.feedMM(2);
 
                 //URL de acesso e senha para remotePanel
                 printer.printBitmapImage(bottomTextBitmap);
                 bottomTextBitmap = null;
                 //Corte de Papel
                 printer.cut(true);
-
+                Toast.makeText(MainActivity.this, getString(R.string.prnTakeReceipt), Toast.LENGTH_SHORT).show();
                 //release
                 printerLock.notifyAll();
                 printer.ledGradualShift(2000, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 73, (byte) 100);
             }
         } catch (JAException e) {
-            Toast.makeText(MainActivity.this, "Failed to print sample", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, getString(R.string.prnFailedPrinting), Toast.LENGTH_LONG).show();
         }
 
     }
@@ -656,7 +659,6 @@ public class MainActivity extends Activity {
             canvasText.drawBitmap(dstBitmap, 0, 0, paint);
             canvasText.drawText(lineText, alignment, dstBitmap.getHeight() + Math.abs(paint.getFontMetrics().ascent), paint);
         }
-        Log.w("#addLineTextImage#", "Até aqui foi rápido " + lineText);
         return expandedBitmap;
     }
 
@@ -772,20 +774,13 @@ public class MainActivity extends Activity {
                     {
                         Log.wtf("#ClientThread#", " inputstream - " + inputStream.available());
 
-                        Log.wtf("#ClientThread#", " inputstream - a");
-
                         byteArrayOutputStream.write(buffer, 0, bytesRead);
 
-                        Log.wtf("#ClientThread#", " inputstream - b");
                         response = byteArrayOutputStream.toString("UTF-8");
 
-                        Log.wtf("#ClientThread#", " inputstream - c");
                         updateConversationHandler.post(new updateUIThread(response));
 
-                        Log.wtf("#ClientThread#", " inputstream - d");
                         byteArrayOutputStream.reset();
-
-                        Log.wtf("#ClientThread#", " inputstream - e");
 
                     }
                 } catch (SocketException e) {
@@ -797,7 +792,6 @@ public class MainActivity extends Activity {
                     }
                     startSocket();
                 }
-
 
             } catch (IOException e1) {
                 e1.printStackTrace();

@@ -189,7 +189,7 @@
                 android:layout_height="match_parent"
                 android:scaleType="fitCenter"
                 android:id="@+id/logo"
-                android:src="@drawable/ualLogo"
+                android:src="@drawable/uallogo"
                 android:padding="10dp"
                 android:background="@android:color/transparent"
                 android:soundEffectsEnabled="false"
