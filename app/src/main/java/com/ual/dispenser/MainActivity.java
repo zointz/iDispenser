@@ -34,13 +34,11 @@ import com.StarMicronics.jasura.JAPrinter.JAPrintSpeed;
 import com.StarMicronics.jasura.JAPrinterStatus;
 
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -325,7 +323,7 @@ public class MainActivity extends Activity {
 
             videoview = (VideoView) findViewById(R.id.videoView);
 
-            Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.ual3);
+            Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.ualVideo);
 
             videoview.setVideoURI(uri);
 
@@ -366,7 +364,7 @@ public class MainActivity extends Activity {
         /*
          *  Generate logo Bitmap from resource and align it center for sample receipt
          */
-            Bitmap loadLogoBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ual_horizontal); // add a image from resources
+            Bitmap loadLogoBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ualLogo); // add a image from resources
             loadLogoBitmap = Bitmap.createScaledBitmap(loadLogoBitmap, 291, 200, true); // set size to ignore scale
             int alignLogoCenter = (paperWidth - loadLogoBitmap.getWidth()) / 2;
             logoBitmap = Bitmap.createBitmap(loadLogoBitmap.getWidth() + alignLogoCenter, loadLogoBitmap.getHeight(), Bitmap.Config.RGB_565);

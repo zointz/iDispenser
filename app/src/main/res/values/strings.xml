@@ -7,13 +7,6 @@
     <string name="retrying">Nova tentativa de ligação... Por favor aguarde</string>
 
 
-    <!-- Definir a hora desligar Asura-->
-    <string name="switchAzuraOff">19:23</string>
 
-    <!-- Definir o IP do servidor </string>-->
-    <string name="serverIP">192.168.1.8</string>
-
-    <!-- Defenir o Porto do servidor-->
-    <integer name="port">5007</integer>
 
 </resources>
