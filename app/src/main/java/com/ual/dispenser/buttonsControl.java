@@ -1,8 +1,6 @@
 package com.ual.dispenser;
 
-import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 
 import com.StarMicronics.jasura.JAException;
@@ -17,7 +15,6 @@ public class buttonsControl {
     public buttonsControl(Context context) {
             this.context = context;
         }
-
 
     /**
      * Método que mostra o menu indicando que aguarda connecção
@@ -46,6 +43,13 @@ public class buttonsControl {
         });
     }
 
+
+    /**
+     * Método que mostra o menu os botões com os nomes indicados pelo servidor
+     *
+     * @param numberButtons
+     * @param splitedMessage
+     */
     public void showButtons(final int numberButtons, final String[] splitedMessage) {
 
         ((MainActivity)context).runOnUiThread(new Runnable() {

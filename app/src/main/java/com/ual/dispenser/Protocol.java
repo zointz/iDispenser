@@ -2,8 +2,6 @@ package com.ual.dispenser;
 
 import android.content.Context;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.BufferedWriter;
@@ -17,57 +15,45 @@ import java.net.Socket;
  */
 
 
+/**
+ * Class que processa o protocolo recebido
+ */
+
 public class Protocol {
 
     String messageIn, messageOut;
-    private Button button1, button2, button3, button4, button5;
-    public static final int MAXBUTTONS = 5;
-    private Button tickeTbutton[] = new Button[MAXBUTTONS];
+    Context context;
     private Socket socket = null;
     private PrintWriter out;
-    private MainActivity act;
-    Context context;
-
 
 
     //Construtores
-
-    public Protocol() {
-        // setContentView(R.layout.activity_main);
-    }
-
-    public Protocol(Socket socket) {
-        this.socket = socket;
-
-
-        try {
-            out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    public Protocol(Socket socket, MainActivity activity) throws Exception {
-        this.socket = socket;
-        act = activity;
-
-        try {
-            out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.e("#Protocol#", " - Exception - " + e.getMessage());
-        }
-
-    }
-
 
     public Protocol(Context context) {
         this.context = context;
     }
 
 
+    public Protocol(Socket socket) {
+        this.socket = socket;
+
+        try {
+            out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("#Protocol#", " - Exception - " + e.getMessage());
+
+        }
+    }
+
+
     // Métodos
+
+    /**
+     * Metodo que envia a mensagem do protocolo inicial "Hello"
+     *
+     * @return true or false
+     */
 
 
     public boolean startingProtocol() {
@@ -76,6 +62,15 @@ public class Protocol {
         return true;
 
     }
+
+
+    /**
+     * Método que envia mensagens ao servidor
+     *
+     * @param message recebe a mensagem para enviar ao servidor
+     * @return true or false
+     * @throws Exception
+     */
 
     public boolean sendMessage(String message) throws Exception {
 
@@ -88,22 +83,23 @@ public class Protocol {
             return false;
         }
 
-        if (out.checkError()){
-            Log.e("#Protocol#", " - outError - " + out.checkError())  ;
+        if (out.checkError()) {
+            Log.e("#Protocol#", " - outError - " + out.checkError());
             throw new IOException("Error transmitting data.");
         }
 
-
         return true;
-
 
     }
 
+    /**
+     * Método que trata as mensagens recebidas do servidor e age em conformidade
+     *
+     * @param message - Recebe a mensagem do servidor
+     */
+
 
     public void receiveMessage(String message) {
-
-
-        // Context applicationContext = act.getContextOfApplication();
 
 
         // Remove CRLF da string com o texto
@@ -115,7 +111,7 @@ public class Protocol {
         String[] splitedProtocol;
         splitedProtocol = message.split(";");
 
-        Log.v("#Protocol#" , " - Protocol - "+ splitedProtocol[0]);
+        Log.v("#Protocol#", " - Protocol - " + splitedProtocol[0]);
 
 
         //Testa o protocolo
@@ -124,18 +120,18 @@ public class Protocol {
             case "BUTTONS":
 
                 // Separa a string com os vários botões separados por virgula, em string individuais
-
                 splitedMessage = splitedProtocol[1].split(",");
 
                 for (String s : splitedMessage) {
-                    Log.v("#Protocol#", " - Message -"+ s);
+                    Log.v("#Protocol#", " - Message -" + s);
                 }
                 Log.v("#Protocol#", "- Nº de elementos - " + Integer.toString(splitedMessage.length));
-                //Chama o controle dos botões, para mostrar os departamentos.
-                new buttonsControl(context).showButtons(splitedMessage.length,splitedMessage);
 
+                //Chama o controle dos botões, para mostrar os departamentos.
+                new buttonsControl(context).showButtons(splitedMessage.length, splitedMessage);
 
                 break;
+
             case "TICKET":
                 splitedMessage = splitedProtocol[1].split(",");
 
@@ -145,24 +141,27 @@ public class Protocol {
 
                 ((MainActivity) context).printTicket(splitedMessage[0], splitedMessage[1], splitedMessage[2]);
 
-
                 break;
 
             case "INACTIVE":
-                    MainActivity.inactive=true;
+
+                MainActivity.inactive = true;
                 Log.v("#Protocol#", " - Recebido INACTIVE");
                 Toast.makeText(context, R.string.inactive, Toast.LENGTH_LONG).show();
+
                 break;
 
-
             case "KEEPALIVE":
-                MainActivity.keepAlive=true;
+                MainActivity.keepAlive = true;
                 Log.v("#Protocol#", " - Recebido KEEPALIVE");
+
                 break;
 
             default:
                 Log.v("#Protocol#", " - Não consta do protocolo (comando desconhecido)");
+
                 break;
+
         }
     }
 
