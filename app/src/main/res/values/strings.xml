@@ -15,4 +15,5 @@
     <string name="prnFailedStatus">Falha ao pedir status de impressora</string>
     <string name="prnFailedPrinting">Falha ao imprimir o talão</string>
     <string name="prnTakeReceipt">Por favor, retire o ticket.\nObrigado</string>
+
 </resources>

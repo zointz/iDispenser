@@ -56,7 +56,11 @@ public class MainActivity extends Activity {
 
     public static Boolean keepAlive, inactive = false, shutdown = false, socketStayClosed;
     private final int paperWidth = 576;
-    private final int[] exitSequence = {0, 2, 2, 6, 8, 5, 12, 14, 8, 18};  //Sequência de saida
+
+
+    private final int[] exitSequence = getResources().getIntArray(R.array.exitSequence);
+
+    //private final int[] exitSequence = {0, 2, 2, 6, 8, 5, 12, 14, 8, 18};  //Sequência de saida
     protected JAPrinter printer;
     VideoView videoview;
 
@@ -456,7 +460,7 @@ public class MainActivity extends Activity {
             new ToneGenerator(AudioManager.STREAM_SYSTEM, 100).startTone(AudioManager.STREAM_SYSTEM, 10);
             exitCounter = 0;
 
-        } else if (exitCounter == 5) {
+        } else if (exitCounter == getResources().getInteger(R.integer.maxSequency)) {
 
             finish();
 

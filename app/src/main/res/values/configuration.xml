@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Define Asura Shutdown Time-->
-    <string name="switchAzuraOff">22:00</string>
 
-    <!-- Define iServer IP address</string>-->
-    <string name="serverIP">192.168.1.3</string>
+<!-- Define iServer IP address</string>-->
+<string name="serverIP">192.168.1.3</string>
 
-    <!-- Define iServer port number-->
-    <integer name="port">5007</integer>
+<!-- Define iServer port number-->
+<integer name="port">5007</integer>
+
+<!-- Define Asura Shutdown Time-->
+<string name="switchAzuraOff">22:43</string>
+
+
+<!--
+Sequencia usada para saida do iTicket
+Pode ter mais passos do que o limite definido em baixo
+-->
+<integer-array name="exitSequence">
+    <item>0</item>
+    <item>2</item>
+    <item>2</item>
+    <item>6</item>
+    <item>8</item>
+    <item>5</item>
+    <item>12</item>
+    <item>14</item>
+    <item>8</item>
+    <item>18</item>
+</integer-array>
+
+<!-- Numero de passos que a sequência terá (Inicia-se em zero)-->
+<integer name="maxSequency">5</integer>
+
 </resources>
